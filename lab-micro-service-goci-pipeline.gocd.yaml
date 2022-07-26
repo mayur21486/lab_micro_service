@@ -1,12 +1,16 @@
 format_version: 10
 pipelines:
   lab-micro-service-goci-pipeline:
-    group: LAB_MICRO_SERVICE 
-    label_template: ${git:7}
+    group: defaultGroup
+    label_template: ${COUNT}
     lock_behavior: none
     display_order: -1
+    environment_variables:
+      docker_name: mayur21486
+    secure_variables:
+      docker_pass: AES:OXYwkDeq7mdM6mA0DANz0g==:Ur6bWL/XYygLodGGfkOaaA==
     materials:
-      git-0de8ebd:
+      git-d960c79:
         git: https://github.com/mayur21486/lab_micro_service.git
         shallow_clone: false
         auto_update: true
@@ -22,17 +26,21 @@ pipelines:
         jobs:
           test-code:
             timeout: 0
+            elastic_profile_id: lab-elastic-agent-profle2
             tasks:
             - exec:
                 arguments:
-                - ls index.html
-                command: sh
-                run_if: passed
+                - -c
+                - git clone https://github.com/mayur21486/lab_micro_service.git
+                command: /bin/sh
+                run_if: any
             - exec:
                 arguments:
-                - cat index.html
-                command: sh
-                run_if: passed
+                - -c
+                - /bin/ls index.html
+                command: /bin/sh
+                working_directory: lab_micro_service
+                run_if: any
     - build-and-publish:
         fetch_materials: true
         keep_artifacts: false
@@ -43,33 +51,46 @@ pipelines:
         jobs:
           build:
             timeout: 0
-            elastic_profile_id: lab-elastic-agent-profle
+            elastic_profile_id: lab-elastic-agent-profle2
             tasks:
             - exec:
                 arguments:
+                - -c
                 - docker build .
                 command: sh
                 run_if: passed
           Tag:
             timeout: 0
-            elastic_profile_id: lab-elastic-agent-profle
+            elastic_profile_id: lab-elastic-agent-profle2
             tasks:
             - exec:
                 arguments:
-                - docker tag mayur21486/ft-nginx:v1
+                - -c
+                - docker tag mayur21486/ft-nginx:v5
                 command: sh
                 run_if: passed
           publish:
             timeout: 0
-            elastic_profile_id: lab-elastic-agent-profle
+            elastic_profile_id: lab-elastic-agent-profle2
+            artifacts:
+            - external:
+                id: test-image
+                store_id: docker-hub-mayur
+                configuration:
+                  options:
+                    BuildFile: ''
+                    Tag: v${GO_PIPELINE_LABEL}
+                    Image: mayur21486/ft-nginx
             tasks:
             - exec:
                 arguments:
+                - -c
                 - docker login --username=$docker_name --password=$docker_pass
                 command: sh
                 run_if: passed
             - exec:
                 arguments:
+                - -c
                 - docker push mayur21486/ft-nginx:v1
                 command: sh
                 run_if: passed
