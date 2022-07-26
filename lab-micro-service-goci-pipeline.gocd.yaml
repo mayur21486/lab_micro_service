@@ -1,0 +1,75 @@
+format_version: 10
+pipelines:
+  lab-micro-service-goci-pipeline:
+    group: LAB_MICRO_SERVICE 
+    label_template: ${git:7}
+    lock_behavior: none
+    display_order: -1
+    materials:
+      git-0de8ebd:
+        git: https://github.com/mayur21486/lab_micro_service.git
+        shallow_clone: false
+        auto_update: true
+        branch: master
+    stages:
+    - lint-and-test:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: success
+          allow_only_on_success: false
+        jobs:
+          test-code:
+            timeout: 0
+            tasks:
+            - exec:
+                arguments:
+                - ls index.html
+                command: sh
+                run_if: passed
+            - exec:
+                arguments:
+                - cat index.html
+                command: sh
+                run_if: passed
+    - build-and-publish:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: success
+          allow_only_on_success: true
+        jobs:
+          build:
+            timeout: 0
+            elastic_profile_id: lab-elastic-agent-profle
+            tasks:
+            - exec:
+                arguments:
+                - docker build .
+                command: sh
+                run_if: passed
+          Tag:
+            timeout: 0
+            elastic_profile_id: lab-elastic-agent-profle
+            tasks:
+            - exec:
+                arguments:
+                - docker tag mayur21486/ft-nginx:v1
+                command: sh
+                run_if: passed
+          publish:
+            timeout: 0
+            elastic_profile_id: lab-elastic-agent-profle
+            tasks:
+            - exec:
+                arguments:
+                - docker login --username=$docker_name --password=$docker_pass
+                command: sh
+                run_if: passed
+            - exec:
+                arguments:
+                - docker push mayur21486/ft-nginx:v1
+                command: sh
+                run_if: passed
