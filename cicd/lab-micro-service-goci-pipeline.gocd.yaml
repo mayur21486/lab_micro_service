@@ -78,6 +78,6 @@ pipelines:
             - exec:
                 arguments:
                 - -c
-                - docker push mayur21486/ft-nginx:v1
+                - docker push mayur21486/ft-nginx:v2
                 command: sh
                 run_if: passed
