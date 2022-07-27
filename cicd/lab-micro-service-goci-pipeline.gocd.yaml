@@ -2,7 +2,7 @@ format_version: 10
 pipelines:
   lab-micro-service-goci:
     group: defaultGroup
-    label_template: ${git:7}
+    label_template: ${count}
     lock_behavior: none
     display_order: -1
     environment_variables:
