@@ -2,7 +2,7 @@ format_version: 10
 pipelines:
   lab-micro-service-goci-pipeline:
     group: defaultGroup
-    label_template: ${COUNT}
+    label_template: ${git:7}
     lock_behavior: none
     display_order: -1
     environment_variables:
@@ -10,7 +10,7 @@ pipelines:
     secure_variables:
       docker_pass: AES:OXYwkDeq7mdM6mA0DANz0g==:Ur6bWL/XYygLodGGfkOaaA==
     materials:
-      git-d960c79:
+      git-af7c25a:
         git: https://github.com/mayur21486/lab_micro_service.git
         shallow_clone: false
         auto_update: true
@@ -48,6 +48,10 @@ pipelines:
         approval:
           type: success
           allow_only_on_success: true
+        environment_variables:
+          docker_name_from_stage: mayur21486
+        secure_variables:
+          docker_pass_from_stage: AES:xxR/OOPJzFevyEghma7mGw==:2GhjFoOFLDD6G53Ha6QBSA==
         jobs:
           build:
             timeout: 0
@@ -56,36 +60,19 @@ pipelines:
             - exec:
                 arguments:
                 - -c
-                - docker build .
+                - env
                 command: sh
                 run_if: passed
-          Tag:
-            timeout: 0
-            elastic_profile_id: lab-elastic-agent-profle2
-            tasks:
             - exec:
                 arguments:
                 - -c
-                - docker tag mayur21486/ft-nginx:v5
+                - docker build . -t mayur21486/ft-nginx:v2
                 command: sh
                 run_if: passed
-          publish:
-            timeout: 0
-            elastic_profile_id: lab-elastic-agent-profle2
-            artifacts:
-            - external:
-                id: test-image
-                store_id: docker-hub-mayur
-                configuration:
-                  options:
-                    BuildFile: ''
-                    Tag: v${GO_PIPELINE_LABEL}
-                    Image: mayur21486/ft-nginx
-            tasks:
             - exec:
                 arguments:
                 - -c
-                - docker login --username=$docker_name --password=$docker_pass
+                - docker login --username=$SECRET_USERNAME --password=$SECRET_PASSWORD
                 command: sh
                 run_if: passed
             - exec:
