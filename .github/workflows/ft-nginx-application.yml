@@ -29,6 +29,6 @@ jobs:
        - name: Build the image and pussh
          uses: docker/build-push-action@v3
          with:
-            tag: mayur21486/ft-nginx:v3
             push: true
+            tags: mayur21486/ft-nginx:v3
 
