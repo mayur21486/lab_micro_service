@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "lab-practice.fullname" . }}-test-connection"
+  labels:
+    {{- include "lab-practice.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "lab-practice.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

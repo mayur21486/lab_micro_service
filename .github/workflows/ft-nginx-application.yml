@@ -1,0 +1,34 @@
+name: nginx application
+on: [push]
+
+jobs:
+   test:
+     runs-on: self-hosted
+     steps:
+       - uses: actions/checkout@v3
+       - name: link the code
+         run: |
+           ls index.html
+           cat index.html
+
+    build:
+      runs-on: self-hosted
+      steps:
+        - name: check out gitbub repo
+          uses: actions/checkout@v3
+        
+        - name: Set up Docker BuildX
+          uses: action/setup-buildx-action@v2
+
+        - name: login docker
+          uses: docker/login-action@v2
+          with: 
+             username: { secrets.DOCKER_USER }
+             password: { secrets.DOCKER_PASS }
+
+        - name: Build the image and pussh
+          uses: docker/build-push-action@v3
+          with:
+             tag: mayur21486/ft-nginx:v3
+             push: true
+
