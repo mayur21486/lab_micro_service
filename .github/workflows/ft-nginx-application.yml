@@ -23,8 +23,8 @@ jobs:
        - name: login docker
          uses: docker/login-action@v2
          with: 
-            username: { secrets.DOCKER_USER }
-            password: { secrets.DOCKER_PASS }
+            username: ${{ secrets.DOCKER_USER }}
+            password: ${{ secrets.DOCKER_PASS }}
 
        - name: Build the image and pussh
          uses: docker/build-push-action@v3
